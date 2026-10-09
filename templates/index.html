@@ -1,1 +1,644 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Smart Household Energy Predictor</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.6;
+            padding: 25px 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f766e, #115e59);
+            color: white;
+            text-align: center;
+            padding: 35px 20px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 15px;
+            color: #d1fae5;
+        }
+
+        /* Main card */
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: #115e59;
+            margin-bottom: 8px;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 7px;
+            color: #334155;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+        }
+
+        .button-container {
+            margin-top: 25px;
+        }
+
+        .predict-button {
+            width: 100%;
+            padding: 14px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .predict-button:hover {
+            background: #115e59;
+            transform: translateY(-1px);
+        }
+
+        /* Error message */
+        .error-message {
+            background: #fee2e2;
+            border-left: 5px solid #dc2626;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+        }
+
+        /* Prediction result */
+        .result-card {
+            border-top: 5px solid #0f766e;
+        }
+
+        .prediction-box {
+            background: #ecfdf5;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .prediction-label {
+            font-size: 15px;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        .prediction-value {
+            font-size: 38px;
+            font-weight: bold;
+            color: #047857;
+        }
+
+        .prediction-unit {
+            font-size: 16px;
+            color: #475569;
+        }
+
+        /* Bill details */
+        .bill-heading {
+            font-size: 19px;
+            margin: 20px 0 12px;
+            color: #334155;
+        }
+
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .bill-table th,
+        .bill-table td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .bill-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .bill-table td:last-child,
+        .bill-table th:last-child {
+            text-align: right;
+        }
+
+        .bill-table .total-row {
+            background: #ecfdf5;
+            font-weight: bold;
+            color: #047857;
+            font-size: 16px;
+        }
+
+        .bill-note {
+            background: #fffbeb;
+            color: #92400e;
+            padding: 13px;
+            border-radius: 7px;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        /* Personalized suggestions */
+        .suggestions-section {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .suggestions-intro {
+            color: #64748b;
+            font-size: 14px;
+            margin: 8px 0 20px;
+        }
+
+        .suggestion-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .suggestion-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #f0fdfa;
+            border: 1px solid #ccfbf1;
+            border-radius: 10px;
+            padding: 17px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+        }
+
+        .suggestion-icon {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ccfbf1;
+            border-radius: 50%;
+            font-size: 19px;
+        }
+
+        .suggestion-content h3 {
+            color: #115e59;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .suggestion-content p {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .suggestions-footer {
+            margin-top: 18px;
+            padding: 13px;
+            background: #f8fafc;
+            border-radius: 7px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            padding: 10px 5px 20px;
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 650px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .header {
+                padding: 25px 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 20px 15px;
+            }
+
+            .form-grid,
+            .suggestion-list {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-value {
+                font-size: 32px;
+            }
+
+            .bill-table th,
+            .bill-table td {
+                padding: 11px 7px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Page Header -->
+    <header class="header">
+        <h1>Smart Household Energy Predictor</h1>
+        <p>Predict electricity consumption, estimate your bill, and discover personalized energy-saving tips.</p>
+    </header>
+
+    <!-- Error Message -->
+    {% if error %}
+    <div class="error-message">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Household Input Form -->
+    <section class="card">
+        <h2 class="section-title">Household Details</h2>
+
+        <p class="section-description">
+            Enter your household information to estimate electricity consumption and receive personalized suggestions.
+        </p>
+
+        <form method="POST" action="/">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="num_rooms">Number of Rooms</label>
+                    <input
+                        type="number"
+                        id="num_rooms"
+                        name="num_rooms"
+                        min="1"
+                        max="100"
+                        step="1"
+                        placeholder="e.g. 3"
+                        value="{{ request.form.get('num_rooms', '') }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="num_people">Number of People</label>
+                    <input
+                        type="number"
+                        id="num_people"
+                        name="num_people"
+                        min="1"
+                        max="100"
+                        step="1"
+                        placeholder="e.g. 4"
+                        value="{{ request.form.get('num_people', '') }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="housearea">House Area (sq. ft.)</label>
+                    <input
+                        type="number"
+                        id="housearea"
+                        name="housearea"
+                        min="1"
+                        step="any"
+                        placeholder="e.g. 800"
+                        value="{{ request.form.get('housearea', '') }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="num_children">Number of Children</label>
+                    <input
+                        type="number"
+                        id="num_children"
+                        name="num_children"
+                        min="0"
+                        max="100"
+                        step="1"
+                        placeholder="e.g. 2"
+                        value="{{ request.form.get('num_children', '') }}"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="is_ac">Air Conditioner (AC)</label>
+                    <select id="is_ac" name="is_ac" required>
+                        <option value="">Select an option</option>
+                        <option value="1"
+                            {% if request.form.get('is_ac') == '1' %}selected{% endif %}>
+                            Yes
+                        </option>
+                        <option value="0"
+                            {% if request.form.get('is_ac') == '0' %}selected{% endif %}>
+                            No
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="is_tv">Television (TV)</label>
+                    <select id="is_tv" name="is_tv" required>
+                        <option value="">Select an option</option>
+                        <option value="1"
+                            {% if request.form.get('is_tv') == '1' %}selected{% endif %}>
+                            Yes
+                        </option>
+                        <option value="0"
+                            {% if request.form.get('is_tv') == '0' %}selected{% endif %}>
+                            No
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="is_flat">House Type</label>
+                    <select id="is_flat" name="is_flat" required>
+                        <option value="">Select an option</option>
+                        <option value="1"
+                            {% if request.form.get('is_flat') == '1' %}selected{% endif %}>
+                            Flat / Apartment
+                        </option>
+                        <option value="0"
+                            {% if request.form.get('is_flat') == '0' %}selected{% endif %}>
+                            Independent House
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="is_urban">Location Type</label>
+                    <select id="is_urban" name="is_urban" required>
+                        <option value="">Select an option</option>
+                        <option value="1"
+                            {% if request.form.get('is_urban') == '1' %}selected{% endif %}>
+                            Urban
+                        </option>
+                        <option value="0"
+                            {% if request.form.get('is_urban') == '0' %}selected{% endif %}>
+                            Rural
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="predict-button">
+                    Predict Consumption &amp; Get Suggestions
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+    <!-- Prediction Results -->
+    {% if prediction is not none %}
+
+    <section class="card result-card">
+
+        <h2 class="section-title">Your Prediction Results</h2>
+
+        <p class="section-description">
+            Here is the estimated monthly electricity consumption for your household.
+        </p>
+
+        <div class="prediction-box">
+            <p class="prediction-label">Predicted Monthly Electricity Consumption</p>
+
+            <div class="prediction-value">
+                {{ "%.2f"|format(prediction) }}
+            </div>
+
+            <p class="prediction-unit">Units (kWh) per month</p>
+        </div>
+
+        <!-- Estimated Electricity Bill -->
+        <h3 class="bill-heading">Estimated Electricity Bill</h3>
+
+        <table class="bill-table">
+    <thead>
+        <tr>
+            <th>Bill Component</th>
+            <th>Estimated Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>Energy Charges</td>
+            <td>₹{{ "%.2f"|format(bill.energy_charges) }}</td>
+        </tr>
+
+        <tr>
+            <td>Wheeling Charges</td>
+            <td>₹{{ "%.2f"|format(bill.wheeling_charges) }}</td>
+        </tr>
+
+        <tr>
+            <td>Fixed Charges</td>
+            <td>₹{{ "%.2f"|format(bill.fixed_charges) }}</td>
+        </tr>
+
+        <tr>
+            <td>Meter Rent</td>
+            <td>₹{{ "%.2f"|format(bill.meter_rent) }}</td>
+        </tr>
+
+        <tr>
+            <td>Electricity Duty (16%)</td>
+            <td>₹{{ "%.2f"|format(bill.electricity_duty) }}</td>
+        </tr>
+
+        <tr>
+            <td>Fuel Adjustment Charge (FAC)</td>
+            <td>₹{{ "%.2f"|format(bill.fuel_adjustment_charge) }}</td>
+        </tr>
+
+        <tr class="total-row">
+            <td>Estimated Total Bill</td>
+            <td>₹{{ "%.2f"|format(bill.total_bill) }}</td>
+        </tr>
+    </tbody>
+</table>
+
+        <div class="bill-note">
+            <strong>Note:</strong>
+            This is an approximate bill based on the tariff values configured in the application.
+            Your actual electricity bill may differ due to applicable tariff categories, taxes,
+            duties, subsidies, and other charges.
+        </div>
+
+        <!-- Personalized Energy-Saving Suggestions -->
+        <div class="suggestions-section">
+
+            <h2 class="section-title">
+                Personalized Energy-Saving Suggestions
+            </h2>
+
+            <p class="suggestions-intro">
+                These suggestions are generated based on your household details and predicted
+                electricity consumption. Follow the tips that are relevant to your home.
+            </p>
+
+            {% if suggestions %}
+
+            <div class="suggestion-list">
+
+                {% for suggestion in suggestions %}
+
+                <article class="suggestion-card">
+
+                    <div class="suggestion-icon">
+                        {% if 'AC' in suggestion.title or 'air conditioner' in suggestion.title|lower %}
+                            ❄️
+                        {% elif 'TV' in suggestion.title or 'television' in suggestion.title|lower %}
+                            📺
+                        {% elif 'room' in suggestion.title|lower or 'light' in suggestion.title|lower %}
+                            💡
+                        {% elif 'appliance' in suggestion.title|lower %}
+                            🔌
+                        {% elif 'usage' in suggestion.title|lower or 'consumption' in suggestion.title|lower %}
+                            📊
+                        {% elif 'family' in suggestion.title|lower or 'people' in suggestion.title|lower %}
+                            👨‍👩‍👧‍👦
+                        {% else %}
+                            🌱
+                        {% endif %}
+                    </div>
+
+                    <div class="suggestion-content">
+                        <h3>{{ suggestion.title }}</h3>
+                        <p>{{ suggestion.description }}</p>
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <p>
+                No personalized suggestions are available for this prediction.
+                Try submitting your household details again.
+            </p>
+
+            {% endif %}
+
+            <div class="suggestions-footer">
+                <strong>Tip:</strong>
+                Start with one or two suggestions that are easy to follow.
+                Regularly monitoring your electricity consumption can help you understand
+                your household's energy-use patterns.
+            </div>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Smart Household Energy Predictor | Machine Learning-Based Energy Estimation</p>
+        <p>Predictions and suggestions are estimates intended to support energy awareness.</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
+```
